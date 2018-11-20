@@ -15,29 +15,37 @@ public abstract class AbstractDao<PK extends Serializable, T> {
     private SessionFactory sessionFactory;
 
     @SuppressWarnings("unchecked")
-    public AbstractDao() {
+    AbstractDao() {
         this.persistentClass = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
     }
 
-    protected Session getSession() {
+    Session getSession() {
         return sessionFactory.getCurrentSession();
     }
 
     @SuppressWarnings("unchecked")
-    public T getByKey(PK key) {
+    T getByKey(PK key) {
         return (T) getSession().get(persistentClass, key);
     }
 
-    public void persist(T entity) {
+    void persist(T entity) {
         getSession().persist(entity);
+    }
+
+    public void update(T entity) {
+        getSession().update(entity);
     }
 
     public void delete(T entity) {
         getSession().delete(entity);
     }
 
-    protected Criteria createEntityCriteria() {
+    Criteria createEntityCriteria() {
         return getSession().createCriteria(persistentClass);
+    }
+
+    Criteria createEntityCriteria(Class aClass, String s) {
+        return getSession().createCriteria(aClass, s);
     }
 
 

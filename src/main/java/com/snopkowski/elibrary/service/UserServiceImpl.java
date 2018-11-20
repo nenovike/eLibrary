@@ -7,6 +7,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service("userService")
 @Transactional
 public class UserServiceImpl implements UserService {
@@ -29,6 +31,10 @@ public class UserServiceImpl implements UserService {
 
     public User findBySso(String sso) {
         return dao.findBySSO(sso);
+    }
+
+    public List<User> findAllUsers() {
+        return dao.findAllUsers();
     }
 
 }

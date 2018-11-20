@@ -1,17 +1,20 @@
 package com.snopkowski.elibrary.model;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 import javax.persistence.*;
 
 @Entity
-@Table(name = "USER_PROFILE")
-public class UserProfile {
+@Table(name = "PUBLISHER")
+public class Publisher {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "TYPE", length = 15, unique = true, nullable = false)
-    private String type = UserProfileType.USER.getUserProfileType();
+    @NotEmpty
+    @Column(name = "NAME", nullable = false)
+    private String name;
 
     public int getId() {
         return id;
@@ -21,12 +24,12 @@ public class UserProfile {
         this.id = id;
     }
 
-    public String getType() {
-        return type;
+    public String getName() {
+        return name;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
@@ -35,19 +38,17 @@ public class UserProfile {
             return true;
         if (obj == null)
             return false;
-        if (!(obj instanceof UserProfile))
+        if (!(obj instanceof Publisher))
             return false;
-        UserProfile other = (UserProfile) obj;
+        Publisher other = (Publisher) obj;
         if (id != other.id)
             return false;
-        if (type == null) {
-            return other.type == null;
-        } else return type.equals(other.type);
+        return name.equals(other.name);
     }
 
     @Override
     public String toString() {
-        return "UserProfile [id=" + id + ",  type=" + type + "]";
+        return "User [id=" + id + ", name=" + name + "]";
     }
 
 

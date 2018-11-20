@@ -19,6 +19,15 @@ public class ApplicationConfiguration extends WebMvcConfigurerAdapter {
     @Autowired
     RoleToUserProfileConverter roleToUserProfileConverter;
 
+    @Autowired
+    IdToAuthorConverter idToAuthorConverter;
+
+    @Autowired
+    IdToGenreConverter idToGenreConverter;
+
+    @Autowired
+    IdToPublisherConverter idToPublisherConverter;
+
 
     @Override
     public void configureViewResolvers(ViewResolverRegistry registry) {
@@ -36,6 +45,7 @@ public class ApplicationConfiguration extends WebMvcConfigurerAdapter {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/static/**").addResourceLocations("/static/");
+        registry.addResourceHandler("/js/**").addResourceLocations("/js/");
     }
 
     /*
@@ -45,6 +55,9 @@ public class ApplicationConfiguration extends WebMvcConfigurerAdapter {
     @Override
     public void addFormatters(FormatterRegistry registry) {
         registry.addConverter(roleToUserProfileConverter);
+        registry.addConverter(idToAuthorConverter);
+        registry.addConverter(idToGenreConverter);
+        registry.addConverter(idToPublisherConverter);
     }
 
 
