@@ -1,13 +1,13 @@
-package com.snopkowski.elibrary.model;
+package com.snopkowski.elibrary.dao;
 
-public enum UserProfileType {
+public enum UserProfileTypeDao {
     USER("USER"),
     DBA("DBA"),
     ADMIN("ADMIN");
 
     String userProfileType;
 
-    private UserProfileType(String userProfileType) {
+    private UserProfileTypeDao(String userProfileType) {
         this.userProfileType = userProfileType;
     }
 

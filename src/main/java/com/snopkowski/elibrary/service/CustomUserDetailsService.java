@@ -1,7 +1,7 @@
 package com.snopkowski.elibrary.service;
 
-import com.snopkowski.elibrary.model.User;
-import com.snopkowski.elibrary.model.UserProfile;
+import com.snopkowski.elibrary.dao.UserDao;
+import com.snopkowski.elibrary.dao.UserProfileDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,23 +23,23 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String ssoId)
             throws UsernameNotFoundException {
-        User user = userService.findBySso(ssoId);
-        System.out.println("User : " + user);
-        if (user == null) {
-            System.out.println("User not found");
+        UserDao userDao = userService.findBySso(ssoId);
+        System.out.println("UserDao : " + userDao);
+        if (userDao == null) {
+            System.out.println("UserDao not found");
             throw new UsernameNotFoundException("Username not found");
         }
-        return new org.springframework.security.core.userdetails.User(user.getSsoId(), user.getPassword(),
-                user.getState().equals("Active"), true, true, true, getGrantedAuthorities(user));
+        return new org.springframework.security.core.userdetails.User(userDao.getSsoId(), userDao.getPassword(),
+                userDao.getState().equals("Active"), true, true, true, getGrantedAuthorities(userDao));
     }
 
 
-    private List<GrantedAuthority> getGrantedAuthorities(User user) {
+    private List<GrantedAuthority> getGrantedAuthorities(UserDao userDao) {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 
-        for (UserProfile userProfile : user.getUserProfiles()) {
-            System.out.println("UserProfile : " + userProfile);
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + userProfile.getType()));
+        for (UserProfileDao userProfileDao : userDao.getUserProfileDaos()) {
+            System.out.println("UserProfileRepository : " + userProfileDao);
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + userProfileDao.getType()));
         }
         System.out.print("authorities :" + authorities);
         return authorities;

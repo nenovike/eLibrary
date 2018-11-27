@@ -1,16 +1,18 @@
-package com.snopkowski.elibrary.model;
+package com.snopkowski.elibrary.dao;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
-@Table(name = "BORROW")
-public class Borrow {
+@Table(name = "BORROWING")
+public class BorrowingDao {
 
     @Id
     //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @NotNull
     @Column(name = "DATE_OF_BORROWING", nullable = false)
     private Date dateOfBorrowing;
 
@@ -18,12 +20,10 @@ public class Borrow {
     private Date dateOfReturning;
 
     @ManyToOne
-    @JoinColumn(name = "book_id", nullable = false)
-    private Book book;
+    private BookDao bookDao;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private UserDao userDao;
 
     public int getId() {
         return id;
@@ -49,20 +49,20 @@ public class Borrow {
         this.dateOfReturning = dateOfReturning;
     }
 
-    public Book getBook() {
-        return book;
+    public BookDao getBookDao() {
+        return bookDao;
     }
 
-    public void setBook(Book book) {
-        this.book = book;
+    public void setBookDao(BookDao bookDao) {
+        this.bookDao = bookDao;
     }
 
-    public User getUser() {
-        return user;
+    public UserDao getUserDao() {
+        return userDao;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
     }
 
     @Override
@@ -71,9 +71,9 @@ public class Borrow {
             return true;
         if (obj == null)
             return false;
-        if (!(obj instanceof Borrow))
+        if (!(obj instanceof BorrowingDao))
             return false;
-        Borrow other = (Borrow) obj;
+        BorrowingDao other = (BorrowingDao) obj;
         return id == other.id;
     }
 }

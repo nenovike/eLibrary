@@ -28,7 +28,7 @@
         <c:forEach var="role" items="${roles}">
             <c:if test="${role eq 'USER'}">
                 <li class="nav-item mr-2">
-                    <a href="/user" class="nav-link">Panel Użytkownika</a>
+                    <a href="/user/books" class="nav-link">Panel Użytkownika</a>
                 </li>
             </c:if>
         </c:forEach>
@@ -53,5 +53,9 @@
         <p>Pomyślnie utworzono użytkownika!</p>
     </div>
 </c:if>
+<div class="container pt-5 pl-5">
+    <h1 class="mt-5">Internetowy system obsługi biblioteki</h1>
+    <h2 class="mt-5">Autor: Konrad Snopkowski</h2>
+</div>
 </body>
 </html>

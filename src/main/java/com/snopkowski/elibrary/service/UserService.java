@@ -1,17 +1,40 @@
 package com.snopkowski.elibrary.service;
 
-import com.snopkowski.elibrary.model.User;
+import com.snopkowski.elibrary.dao.UserDao;
+import com.snopkowski.elibrary.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-public interface UserService {
+@Service("userService")
+@Transactional
+public class UserService {
 
-    void save(User user);
+    @Autowired
+    private UserRepository userRepository;
 
-    User findById(int id);
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-    User findBySso(String sso);
 
-    List<User> findAllUsers();
+    public void save(UserDao userDao) {
+        userDao.setPassword(passwordEncoder.encode(userDao.getPassword()));
+        userRepository.save(userDao);
+    }
+
+    public UserDao findById(int id) {
+        return userRepository.findById(id);
+    }
+
+    public UserDao findBySso(String sso) {
+        return userRepository.findBySSO(sso);
+    }
+
+    public List<UserDao> findAllUsers() {
+        return userRepository.findAllUsers();
+    }
 
 }

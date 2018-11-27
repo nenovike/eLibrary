@@ -1,4 +1,4 @@
-package com.snopkowski.elibrary.dao;
+package com.snopkowski.elibrary.repository;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -8,14 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 
-public abstract class AbstractDao<PK extends Serializable, T> {
+public abstract class AbstractRepository<PK extends Serializable, T> {
 
     private final Class<T> persistentClass;
     @Autowired
     private SessionFactory sessionFactory;
 
     @SuppressWarnings("unchecked")
-    AbstractDao() {
+    AbstractRepository() {
         this.persistentClass = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
     }
 

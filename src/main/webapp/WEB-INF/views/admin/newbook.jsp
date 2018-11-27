@@ -26,7 +26,7 @@
         <c:forEach var="role" items="${roles}">
             <c:if test="${role eq 'USER'}">
                 <li class="nav-item mr-2">
-                    <a href="/user" class="nav-link">Panel Użytkownika</a>
+                    <a href="/user/books" class="nav-link">Panel Użytkownika</a>
                 </li>
             </c:if>
         </c:forEach>
@@ -43,8 +43,7 @@
     </ul>
 </nav>
 
-<div class="container md-12 pt-5">
-
+<div class="container pt-5">
     <h1>Dodaj nową książkę</h1>
     <div class="form-container">
 
@@ -75,13 +74,22 @@
 
             <div class="row">
                 <div class="form-group col-md-12">
-                    <label class="col-md-3 control-lable" for="authors">Autor</label>
-                    <div class="col-md-7">
-                        <form:select path="authors" items="${authors}" multiple="true" itemValue="id"
-                                     itemLabel="fullName"
-                                     class="form-control input-sm"/>
-                        <div class="has-error">
-                            <form:errors path="authors" class="help-inline"/>
+                    <label class="col-md-3 control-lable" for="authorFirstName">Autor Imię</label>
+                    <label class="col-md-3 control-lable" for="authorLastName">Autor Nazwisko</label>
+                    <div>
+                        <div class="col-md-3 d-inline-block">
+                            <form:input type="text" path="authorFirstName" id="authorFirstName"
+                                        class="form-control input-sm"/>
+                            <div class="has-error">
+                                <form:errors path="authorFirstName" class="help-inline"/>
+                            </div>
+                        </div>
+                        <div class="col-md-4 d-inline-block">
+                            <form:input type="text" path="authorLastName" id="authorLastName"
+                                        class="form-control input-sm"/>
+                            <div class="has-error">
+                                <form:errors path="authorLastName" class="help-inline"/>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -89,12 +97,12 @@
 
             <div class="row">
                 <div class="form-group col-md-12">
-                    <label class="col-md-3 control-lable" for="genres">Gatunek</label>
+                    <label class="col-md-3 control-lable" for="genreDaos">Gatunek</label>
                     <div class="col-md-7">
-                        <form:select path="genres" items="${genres}" multiple="true" itemValue="id" itemLabel="name"
+                        <form:select path="genreDaos" items="${genres}" multiple="true" itemValue="id" itemLabel="name"
                                      class="form-control input-sm"/>
                         <div class="has-error">
-                            <form:errors path="genres" class="help-inline"/>
+                            <form:errors path="genreDaos" class="help-inline"/>
                         </div>
                     </div>
                 </div>
@@ -104,8 +112,7 @@
                 <div class="form-group col-md-12">
                     <label class="col-md-3 control-lable" for="publisher">Wydawnictwo</label>
                     <div class="col-md-7">
-                        <form:select path="publisher" items="${publishers}" itemValue="id" itemLabel="name"
-                                     class="form-control input-sm"/>
+                        <form:input type="text" path="publisher" id="publisher" class="form-control input-sm"/>
                         <div class="has-error">
                             <form:errors path="publisher" class="help-inline"/>
                         </div>

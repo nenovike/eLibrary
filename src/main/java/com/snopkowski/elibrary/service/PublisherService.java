@@ -1,16 +1,33 @@
 package com.snopkowski.elibrary.service;
 
-import com.snopkowski.elibrary.model.Publisher;
+import com.snopkowski.elibrary.dao.PublisherDao;
+import com.snopkowski.elibrary.repository.PublisherRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-public interface PublisherService {
+@Service("publisherService")
+@Transactional
+public class PublisherService {
 
-    void save(Publisher publisher);
+    @Autowired
+    PublisherRepository publisherRepository;
 
-    List<Publisher> findAll();
+    public void save(PublisherDao publisherDao) {
+        publisherRepository.save(publisherDao);
+    }
 
-    Publisher findByName(String name);
+    public List<PublisherDao> findAll() {
+        return publisherRepository.findAll();
+    }
 
-    Publisher findById(int id);
+    public PublisherDao findByName(String name) {
+        return publisherRepository.findByName(name);
+    }
+
+    public PublisherDao findById(int id) {
+        return publisherRepository.findById(id);
+    }
 }

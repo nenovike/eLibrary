@@ -1,14 +1,29 @@
 package com.snopkowski.elibrary.service;
 
-import com.snopkowski.elibrary.model.UserProfile;
+import com.snopkowski.elibrary.dao.UserProfileDao;
+import com.snopkowski.elibrary.repository.UserProfileRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-public interface UserProfileService {
+@Service("userProfileService")
+@Transactional
+public class UserProfileService {
 
-    List<UserProfile> findAll();
+    @Autowired
+    UserProfileRepository userProfileRepository;
 
-    UserProfile findByType(String type);
+    public List<UserProfileDao> findAll() {
+        return userProfileRepository.findAll();
+    }
 
-    UserProfile findById(int id);
+    public UserProfileDao findByType(String type) {
+        return userProfileRepository.findByType(type);
+    }
+
+    public UserProfileDao findById(int id) {
+        return userProfileRepository.findById(id);
+    }
 }

@@ -28,7 +28,7 @@ public class HibernateConfiguration {
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
-        sessionFactory.setPackagesToScan(new String[]{"com.snopkowski.elibrary.model"});
+        sessionFactory.setPackagesToScan(new String[]{"com.snopkowski.elibrary.dao"});
         sessionFactory.setHibernateProperties(hibernateProperties());
         return sessionFactory;
     }

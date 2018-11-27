@@ -1,20 +1,53 @@
 package com.snopkowski.elibrary.service;
 
-import com.snopkowski.elibrary.model.Book;
+import com.snopkowski.elibrary.dao.BookDao;
+import com.snopkowski.elibrary.repository.BookRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-public interface BookService {
+@Service("bookService")
+@Transactional
+public class BookService {
 
-    void save(Book book);
+    @Autowired
+    BookRepository bookRepository;
 
-    void delete(Book book);
+    public void save(BookDao bookDao) {
+        bookRepository.save(bookDao);
+    }
 
-    List<Book> findAll();
+    public void delete(BookDao bookDao) {
+        bookRepository.delete(bookDao);
+    }
 
-    List<Book> findByUserId(int userId);
+    public Integer findCurrentBorrow(int id) {
+        return bookRepository.findCurrentBorrow(id);
+    }
 
-    Book findByISBN(String isbn);
+    public List<BookDao> findAll() {
+        return bookRepository.findAll();
+    }
 
-    Book findById(int id);
+    public List<BookDao> findByAnything(String search) {
+        return bookRepository.findByAnything(search);
+    }
+
+    public List<BookDao> findByUserId(int userId) {
+        return bookRepository.findByUserId(userId);
+    }
+
+    public BookDao findByISBN(String isbn) {
+        return bookRepository.findByISBN(isbn);
+    }
+
+    public BookDao findById(int id) {
+        return bookRepository.findById(id);
+    }
+
+    public List<BookDao> findByAnything(int id, String search) {
+        return bookRepository.findByAnything(id, search);
+    }
 }

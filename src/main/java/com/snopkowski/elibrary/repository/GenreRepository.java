@@ -1,6 +1,6 @@
-package com.snopkowski.elibrary.dao;
+package com.snopkowski.elibrary.repository;
 
-import com.snopkowski.elibrary.model.Genre;
+import com.snopkowski.elibrary.dao.GenreDao;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -9,27 +9,27 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository("genreDao")
-public class GenreDaoImpl extends AbstractDao<Integer, Genre> implements GenreDao {
+public class GenreRepository extends AbstractRepository<Integer, GenreDao> {
 
-    public void save(Genre genre) {
-        persist(genre);
+    public void save(GenreDao genreDao) {
+        persist(genreDao);
     }
 
-    public Genre findById(int id) {
+    public GenreDao findById(int id) {
         return getByKey(id);
     }
 
-    public Genre findByName(String name) {
+    public GenreDao findByName(String name) {
         Criteria crit = createEntityCriteria();
         crit.add(Restrictions.eq("name", name));
-        return (Genre) crit.uniqueResult();
+        return (GenreDao) crit.uniqueResult();
     }
 
-    public List<Genre> findAll() {
+    public List<GenreDao> findAll() {
         Criteria crit = createEntityCriteria();
         crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         crit.addOrder(Order.asc("name"));
-        return (List<Genre>) crit.list();
+        return (List<GenreDao>) crit.list();
     }
 
 }

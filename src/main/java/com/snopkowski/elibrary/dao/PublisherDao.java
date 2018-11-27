@@ -1,18 +1,55 @@
 package com.snopkowski.elibrary.dao;
 
-import com.snopkowski.elibrary.model.Publisher;
+import org.hibernate.validator.constraints.NotEmpty;
 
-import java.util.List;
+import javax.persistence.*;
 
-public interface PublisherDao {
+@Entity
+@Table(name = "PUBLISHER")
+public class PublisherDao {
 
-    void save(Publisher publisher);
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
-    Publisher findById(int id);
+    @NotEmpty
+    @Column(name = "NAME", nullable = false)
+    private String name;
 
-    Publisher findByName(String name);
+    public int getId() {
+        return id;
+    }
 
-    List<Publisher> findAll();
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (!(obj instanceof PublisherDao))
+            return false;
+        PublisherDao other = (PublisherDao) obj;
+        if (id != other.id)
+            return false;
+        return name.equals(other.name);
+    }
+
+    @Override
+    public String toString() {
+        return "UserDao [id=" + id + ", name=" + name + "]";
+    }
+
 
 }
-

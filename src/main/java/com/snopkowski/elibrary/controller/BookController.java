@@ -1,7 +1,9 @@
 package com.snopkowski.elibrary.controller;
 
-import com.snopkowski.elibrary.model.Book;
-import com.snopkowski.elibrary.model.User;
+import com.snopkowski.elibrary.dao.BookDao;
+import com.snopkowski.elibrary.dao.UserDao;
+import com.snopkowski.elibrary.dto.AdminBookDto;
+import com.snopkowski.elibrary.dto.UserBookDto;
 import com.snopkowski.elibrary.service.BookService;
 import com.snopkowski.elibrary.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,23 +29,31 @@ public class BookController {
     @ResponseStatus(value = HttpStatus.OK)
     @RequestMapping(value = "/admin/api/books", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
-    List<Book> getAllBooks() {
-        return bookService.findAll();
+    List<AdminBookDto> getAllBooks(@RequestParam(required = false) String search) {
+        List<BookDao> bookDaos;
+        if (search == null)
+            bookDaos = bookService.findAll();
+        else
+            bookDaos = bookService.findByAnything(search);
+        List<AdminBookDto> bookDtos = new ArrayList<AdminBookDto>();
+        for (BookDao bookDao : bookDaos)
+            bookDtos.add(new AdminBookDto(bookDao, bookService.findCurrentBorrow(bookDao.getId()), null));
+        return bookDtos;
     }
 
     @ResponseStatus(value = HttpStatus.OK)
     @RequestMapping(value = "/admin/api/books/delete", method = RequestMethod.DELETE)
     public @ResponseBody
     int deleteBook(@RequestParam int id) {
-        Book book = bookService.findById(id);
-        bookService.delete(book);
+        BookDao bookDao = bookService.findById(id);
+        bookService.delete(bookDao);
         return id;
     }
 
     @ResponseStatus(value = HttpStatus.OK)
     @RequestMapping(value = "/user/api/books", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
-    List<Book> getUserBooks() {
+    List<UserBookDto> getUserBooks(@RequestParam(required = false) String search) {
         String userName;
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -54,17 +64,25 @@ public class BookController {
         }
         try {
             int id = userService.findBySso(userName).getId();
-            return bookService.findByUserId(id);
+            List<BookDao> bookDaos;
+            if (search == null)
+                bookDaos = bookService.findByUserId(id);
+            else
+                bookDaos = bookService.findByAnything(id, search);
+            List<UserBookDto> bookDtos = new ArrayList<UserBookDto>();
+            for (BookDao bookDao : bookDaos)
+                bookDtos.add(new UserBookDto(bookDao));
+            return bookDtos;
 
         } catch (NullPointerException e) {
-            return new ArrayList<Book>();
+            return new ArrayList<UserBookDto>();
         }
     }
 
     @ResponseStatus(value = HttpStatus.OK)
     @RequestMapping(value = "/admin/api/users", method = RequestMethod.GET, produces = "application/json")
     public @ResponseBody
-    List<User> getAllUsers() {
+    List<UserDao> getAllUsers() {
         return userService.findAllUsers();
     }
 }

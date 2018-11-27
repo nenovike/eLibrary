@@ -1,6 +1,7 @@
 package com.snopkowski.elibrary.controller;
 
-import com.snopkowski.elibrary.model.*;
+import com.snopkowski.elibrary.dao.*;
+import com.snopkowski.elibrary.dto.NewBookDto;
 import com.snopkowski.elibrary.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -48,7 +49,7 @@ public class ApplicationController {
     PublisherService publisherService;
 
     @Autowired
-    BorrowService borrowService;
+    BorrowingService borrowingService;
 
     @RequestMapping(value = {"/"}, method = RequestMethod.GET)
     public String homePage(ModelMap model) {
@@ -59,16 +60,16 @@ public class ApplicationController {
 
     @RequestMapping(value = "/admin/books", method = RequestMethod.GET)
     public String adminBooksPage(ModelMap model) {
-        Borrow borrow = new Borrow();
-        model.addAttribute("borrow", borrow);
+        BorrowingDao borrowingDao = new BorrowingDao();
+        model.addAttribute("borrow", borrowingDao);
         model.addAttribute("roles", getRoles());
         return "admin/books";
     }
 
-    @RequestMapping(value = "/user", method = RequestMethod.GET)
+    @RequestMapping(value = "/user/books", method = RequestMethod.GET)
     public String userPage(ModelMap model) {
         model.addAttribute("roles", getRoles());
-        return "user";
+        return "user/books";
     }
 
     @RequestMapping(value = "/Access_Denied", method = RequestMethod.GET)
@@ -95,74 +96,96 @@ public class ApplicationController {
 
     @RequestMapping(value = "/admin/newUser", method = RequestMethod.GET)
     public String newRegistration(ModelMap model) {
-        User user = new User();
-        model.addAttribute("user", user);
+        UserDao userDao = new UserDao();
+        model.addAttribute("user", userDao);
         model.addAttribute("userRoles", getRoles());
         return "admin/newuser";
     }
 
     /*
      * This method will be called on form submission, handling POST request It
-     * also validates the user input
+     * also validates the userDao input
      */
     @RequestMapping(value = "/admin/newUser", method = RequestMethod.POST)
-    public String saveRegistration(@Valid User user,
+    public String saveRegistration(@Valid UserDao userDao,
                                    BindingResult result, ModelMap model) {
 
         if (result.hasErrors()) {
             System.out.println("There were errors");
             return "admin/newuser";
         }
-        userService.save(user);
+        userService.save(userDao);
 
-        System.out.println("First Name : " + user.getFirstName());
-        System.out.println("Last Name : " + user.getLastName());
-        System.out.println("SSO ID : " + user.getSsoId());
-        System.out.println("Password : " + user.getPassword());
-        System.out.println("Email : " + user.getEmail());
+        System.out.println("First Name : " + userDao.getFirstName());
+        System.out.println("Last Name : " + userDao.getLastName());
+        System.out.println("SSO ID : " + userDao.getSsoId());
+        System.out.println("Password : " + userDao.getPassword());
+        System.out.println("Email : " + userDao.getEmail());
         System.out.println("Checking UsrProfiles....");
-        if (user.getUserProfiles() != null) {
-            for (UserProfile profile : user.getUserProfiles()) {
+        if (userDao.getUserProfileDaos() != null) {
+            for (UserProfileDao profile : userDao.getUserProfileDaos()) {
                 System.out.println("Profile : " + profile.getType());
             }
         }
 
-        model.addAttribute("user", user.getFirstName());
+        model.addAttribute("user", userDao.getFirstName());
         return "redirect:/?addSuccess";
     }
 
     @RequestMapping(value = "/admin/newBook", method = RequestMethod.GET)
     public String newBook(ModelMap model) {
-        Book book = new Book();
-        model.addAttribute("book", book);
+        NewBookDto newBookDto = new NewBookDto();
+        model.addAttribute("book", newBookDto);
         model.addAttribute("roles", getRoles());
         return "admin/newbook";
     }
 
     @RequestMapping(value = "/admin/newBook", method = RequestMethod.POST)
-    public String saveBook(@Valid Book book,
+    public String saveBook(@Valid NewBookDto newBookDto,
                            BindingResult result, ModelMap model) {
 
         if (result.hasErrors()) {
             System.out.println("There were errors");
             return "admin/newbook";
         }
-        bookService.save(book);
+
+        BookDao bookDao = new BookDao();
+        bookDao.setName(newBookDto.getName());
+        bookDao.setIsbn(newBookDto.getIsbn());
+        bookDao.setGenreDaos(newBookDto.getGenreDaos());
+        PublisherDao publisherDao = publisherService.findByName(newBookDto.getPublisher());
+        if (publisherDao == null) {
+            publisherDao = new PublisherDao();
+            publisherDao.setName(newBookDto.getPublisher());
+            publisherService.save(publisherDao);
+        }
+        bookDao.setPublisherDao(publisherDao);
+
+        AuthorDao authorDao = authorService.findByFullName(newBookDto.getAuthorFirstName(), newBookDto.getAuthorLastName());
+        if (authorDao == null) {
+            authorDao = new AuthorDao();
+            authorDao.setFirstName(newBookDto.getAuthorFirstName());
+            authorDao.setLastName(newBookDto.getAuthorLastName());
+            authorService.save(authorDao);
+        }
+        bookDao.setAuthorDao(authorDao);
+        bookDao.setVisible(true);
+        bookService.save(bookDao);
         return "redirect:/admin/books?addSuccess";
     }
 
     @RequestMapping(value = "/admin/borrow", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
-    public String borrowBook(@RequestParam int user, @RequestParam int book,
+    public String borrowBook(@RequestParam int userDao, @RequestParam int bookDao,
                              ModelMap model) {
 
-        Borrow borrow = new Borrow();
-        borrow.setId(borrowService.getNextId().intValue());
-        borrow.setBook(bookService.findById(book));
-        borrow.setUser(userService.findById(user));
-        borrow.setDateOfBorrowing(new Date());
-        borrow.setDateOfReturning(null);
+        BorrowingDao borrowingDao = new BorrowingDao();
+        borrowingDao.setId(borrowingService.getNextId().intValue());
+        borrowingDao.setBookDao(bookService.findById(bookDao));
+        borrowingDao.setUserDao(userService.findById(userDao));
+        borrowingDao.setDateOfBorrowing(new Date());
+        borrowingDao.setDateOfReturning(null);
 
-        borrowService.save(borrow);
+        borrowingService.save(borrowingDao);
         return "redirect:/admin/books?borrowSuccess";
     }
 
@@ -177,9 +200,9 @@ public class ApplicationController {
 
     @RequestMapping(value = "/admin/returnBook", method = RequestMethod.GET)
     public String returnBook(@RequestParam int id) {
-        Borrow borrow = borrowService.findById(id);
-        borrow.setDateOfReturning(new Date());
-        borrowService.update(borrow);
+        BorrowingDao borrowingDao = borrowingService.findById(id);
+        borrowingDao.setDateOfReturning(new Date());
+        borrowingService.update(borrowingDao);
         return "redirect:/admin/books?returnSuccess";
     }
 
@@ -206,8 +229,8 @@ public class ApplicationController {
             userName = principal.toString();
         }
         try {
-            Set<UserProfile> profiles = userService.findBySso(userName).getUserProfiles();
-            for (UserProfile profile : profiles)
+            Set<UserProfileDao> profiles = userService.findBySso(userName).getUserProfileDaos();
+            for (UserProfileDao profile : profiles)
                 roles.add(profile.getType());
         } catch (NullPointerException e) {
             return roles;
@@ -217,27 +240,27 @@ public class ApplicationController {
 
 
     @ModelAttribute("roles")
-    public List<UserProfile> initializeProfiles() {
+    public List<UserProfileDao> initializeProfiles() {
         return userProfileService.findAll();
     }
 
     @ModelAttribute("authors")
-    public List<Author> initializeAuthors() {
+    public List<AuthorDao> initializeAuthors() {
         return authorService.findAll();
     }
 
     @ModelAttribute("genres")
-    public List<Genre> initializeGenres() {
+    public List<GenreDao> initializeGenres() {
         return genreService.findAll();
     }
 
     @ModelAttribute("publishers")
-    public List<Publisher> initializePublishers() {
+    public List<PublisherDao> initializePublishers() {
         return publisherService.findAll();
     }
 
     @ModelAttribute("users")
-    public List<User> initializeUsers() {
+    public List<UserDao> initializeUsers() {
         return userService.findAllUsers();
     }
 }

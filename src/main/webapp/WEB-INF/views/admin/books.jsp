@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -26,11 +27,10 @@
         <c:forEach var="role" items="${roles}">
             <c:if test="${role eq 'USER'}">
                 <li class="nav-item mr-2">
-                    <a href="/user" class="nav-link">Panel Użytkownika</a>
+                    <a href="/user/books" class="nav-link">Panel Użytkownika</a>
                 </li>
             </c:if>
         </c:forEach>
-        </li>
         <li class="nav-item active dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="adminPanelDropdown" role="button" data-toggle="dropdown"
                aria-haspopup="true" aria-expanded="false">Panel Administatora<span class="sr-only">(current)</span></a>
@@ -41,36 +41,39 @@
             </div>
         </li>
     </ul>
+    <form class="form-inline my-2 my-lg-0" action="/admin/books" method="GET">
+        <input class="form-control mr-sm-2" type="text" name="search">
+        <input class="btn btn-light my-2 my-sm-0" type="submit" value="Szukaj"/>
+    </form>
 </nav>
 
-<div class="table-container container" ng-controller='BooksCtrl'>
-    <c:if test="${param.addSuccess != null}">
-        <div class="alert alert-success">
-            <p>Książka dodana pomyślnie.</p>
-        </div>
-    </c:if>
-    <c:if test="${param.deleteSuccess != null}">
-        <div class="alert alert-success">
-            <p>Książka usunięta pomyślnie.</p>
-        </div>
-    </c:if>
-    <c:if test="${param.deleteFault != null}">
-        <div class="alert alert-danger">
-            <p>Nie udało się usunąć książki.</p>
-        </div>
-    </c:if>
-    <c:if test="${param.returnSuccess != null}">
-        <div class="alert alert-success">
-            <p>Książka zwrócona pomyślnie.</p>
-        </div>
-    </c:if>
-    <c:if test="${param.borrowSuccess != null}">
-        <div class="alert alert-success">
-            <p>Książka wypożyczona pomyślnie.</p>
-        </div>
-    </c:if>
+<c:if test="${param.addSuccess != null}">
+    <div class="alert alert-success">
+        <p>Książka dodana pomyślnie.</p>
+    </div>
+</c:if>
+<c:if test="${param.deleteSuccess != null}">
+    <div class="alert alert-success">
+        <p>Książka usunięta pomyślnie.</p>
+    </div>
+</c:if>
+<c:if test="${param.deleteFault != null}">
+    <div class="alert alert-danger">
+        <p>Nie udało się usunąć książki.</p>
+    </div>
+</c:if>
+<c:if test="${param.returnSuccess != null}">
+    <div class="alert alert-success">
+        <p>Książka zwrócona pomyślnie.</p>
+    </div>
+</c:if>
+<c:if test="${param.borrowSuccess != null}">
+    <div class="alert alert-success">
+        <p>Książka wypożyczona pomyślnie.</p>
+    </div>
+</c:if>
+<div class="table-container container pt-5" ng-controller='BooksCtrl'>
     <a class="btn btn-success" href="/admin/newBook">Dodaj książkę</a>
-
     <!-- Table -->
     <table class="table">
         <thead>
@@ -88,20 +91,19 @@
             <td>{{book.id}}</td>
             <td>{{book.name}}</td>
             <td>{{book.isbn}}</td>
+            <td>{{book.author}}</td>
             <td>
-                <div ng-repeat="author in book.authors">{{author.firstName}} {{author.lastName}}</div>
+                <div ng-repeat="genre in book.genres">{{genre}}</div>
             </td>
+            <td>{{book.publisher}}</td>
             <td>
-                <div ng-repeat="genre in book.genres">{{genre.name}}</div>
-            </td>
-            <td>{{book.publisher.name}}</td>
-            <td>
-                <A ng-if="book.currentBorrowId != null" class="btn btn-warning"
-                   HREF="/admin/returnBook?id={{book.currentBorrowId}}">Zwróć</A>
-                <button ng-if="book.currentBorrowId == null" type="button" class="btn btn-primary" data-toggle="modal"
+                <A ng-if="book.borrowId != null" class="btn btn-warning"
+                   HREF="/admin/returnBook?id={{book.borrowId}}">Zwróć</A>
+                <button ng-if="book.borrowId == null" type="button" class="btn btn-primary" data-toggle="modal"
                         data-target=".bd-example-modal-lg{{book.id}}">Wypożycz
                 </button>
-                <A ng-if="book.currentBorrowId == null" class="btn btn-danger" HREF="/admin/deleteBook?id={{book.id}}">Usuń</A>
+                <A ng-if="book.borrowId == null" class="btn btn-danger"
+                   HREF="/admin/deleteBook?id={{book.id}}">Usuń</A>
                 <div class="modal fade bd-example-modal-lg{{book.id}}" tabindex="-1" role="dialog"
                      aria-labelledby="Wypożycz książkę" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
@@ -113,10 +115,10 @@
                                         <div class="form-group col-md-12">
                                             <label class="col-md-3 control-lable" for="user">Użytkownik</label>
                                             <div class="col-md-7">
-                                                <form:select path="user" items="${users}" itemValue="id"
+                                                <form:select path="userDao" items="${users}" itemValue="id"
                                                              itemLabel="ssoId"
                                                              class="form-control input-sm"/>
-                                                <form:input type="hidden" path="book" value="{{book.id}}"/>
+                                                <form:input type="hidden" path="bookDao" value="{{book.id}}"/>
                                             </div>
                                         </div>
                                     </div>
@@ -124,7 +126,8 @@
                                     <div class="row">
                                         <div class="form-group col-md-12">
                                             <input type="submit" value="Wypożycz" class="btn btn-dark btn-sm">
-                                            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">
+                                            <button type="button" class="btn btn-secondary btn-sm"
+                                                    data-dismiss="modal">
                                                 Zamknij
                                             </button>
                                         </div>

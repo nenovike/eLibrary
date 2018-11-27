@@ -1,16 +1,33 @@
 package com.snopkowski.elibrary.service;
 
-import com.snopkowski.elibrary.model.Genre;
+import com.snopkowski.elibrary.dao.GenreDao;
+import com.snopkowski.elibrary.repository.GenreRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-public interface GenreService {
+@Service("genreService")
+@Transactional
+public class GenreService {
 
-    void save(Genre genre);
+    @Autowired
+    GenreRepository genreRepository;
 
-    List<Genre> findAll();
+    public void save(GenreDao genreDao) {
+        genreRepository.save(genreDao);
+    }
 
-    Genre findByName(String name);
+    public List<GenreDao> findAll() {
+        return genreRepository.findAll();
+    }
 
-    Genre findById(int id);
+    public GenreDao findByName(String name) {
+        return genreRepository.findByName(name);
+    }
+
+    public GenreDao findById(int id) {
+        return genreRepository.findById(id);
+    }
 }

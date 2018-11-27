@@ -1,6 +1,6 @@
-package com.snopkowski.elibrary.model;
+package com.snopkowski.elibrary.dao;
 
-public enum State {
+public enum StateDao {
 
     ACTIVE("Active"),
     INACTIVE("Inactive"),
@@ -9,7 +9,7 @@ public enum State {
 
     private String state;
 
-    private State(final String state) {
+    private StateDao(final String state) {
         this.state = state;
     }
 

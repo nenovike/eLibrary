@@ -23,7 +23,7 @@
             <a href="/" class="nav-link">Strona Główna<span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item mr-2">
-            <a href="/user" class="nav-link active">Panel Użytkownika<span class="sr-only">(current)</span></a>
+            <a href="/user/books" class="nav-link active">Panel Użytkownika<span class="sr-only">(current)</span></a>
         </li>
         <c:set var="contains" value="true"/>
         <c:forEach var="role" items="${roles}">
@@ -41,9 +41,12 @@
             </c:if>
         </c:forEach>
     </ul>
+    <form class="form-inline my-2 my-lg-0" action="/user/books" method="GET">
+        <input class="form-control mr-sm-2" type="text" name="search">
+        <input class="btn btn-light my-2 my-sm-0" type="submit" value="Szukaj"/>
+    </form>
 </nav>
-
-<div class="table-container container" ng-controller='UserBooksCtrl'>
+<div class="table-container container pt-5" ng-controller='UserBooksCtrl'>
     <!-- Table -->
     <table class="table">
         <thead>
@@ -58,13 +61,11 @@
             <th scope="row"> {{$index+1}}</th>
             <td>{{book.name}}</td>
             <td>{{book.isbn}}</td>
+            <td>{{book.author}}</td>
             <td>
-                <div ng-repeat="author in book.authors">{{author.firstName}} {{author.lastName}}</div>
+                <div ng-repeat="genre in book.genres">{{genre}}</div>
             </td>
-            <td>
-                <div ng-repeat="genre in book.genres">{{genre.name}}</div>
-            </td>
-            <td>{{book.publisher.name}}</td>
+            <td>{{book.publisher}}</td>
         </tr>
     </table>
 </div>
